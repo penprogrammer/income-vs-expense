@@ -1,0 +1,39 @@
+* {
+    font-family: 'Montserrat';
+}
+
+body {
+    background-color: #202e55 !important;
+}
+
+.avatar {
+    height: 45px;
+    width: 45px;
+    background-color: indianred;
+    border-radius: 50%;
+}
+
+.date {
+    font-size: 13px;
+}
+
+.expense {
+    border-radius: 25px;
+    background-image: linear-gradient(to top, #f36094, #ce2961);
+}
+
+.income {
+    border-radius: 25px;
+    background-image: linear-gradient(to top, #8264f6, #5b3fdf);
+}
+
+.text-sm {
+    font-size: 13px;
+}
+
+.tr-icon {
+    height: 45px;
+    width: 45px;
+    background-color: #132345;
+    border-radius: 10px;
+}

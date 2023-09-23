@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container my-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="index.html"><i class="fa fa-arrow-left text-white fs-4"></i></a>
+            <div class="avatar d-flex justify-content-center align-items-center">
+                <div class="fw-bold text-white fs-6">PP</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container text-white my-3">
+        <h5>Add New Transaction</h5>
+        <p class="text-sm">Submit the form to add new transaction</p>
+    </div>
+
+    <div class="container text-white my-3">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" placeholder="Type your input">
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input type="text" class="form-control" id="price" placeholder="Type your input">
+        </div>
+        <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select name="type" id="type" class="form-control">
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="remark" class="form-label">Remark</label>
+            <input type="text" class="form-control" id="remark" placeholder="Type your input">
+        </div>
+        <button class="btn btn-dark w-100" id="add-transaction">Add Transaction</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+
+    <script>
+        var title = document.getElementById('title');
+        var price = document.getElementById('price');
+        var type = document.getElementById('type');
+        var remark = document.getElementById('remark');
+        var addButton = document.getElementById('add-transaction');
+
+        addButton.addEventListener("click", function () {
+            var items = JSON.parse(localStorage.getItem("transactions")) ?? [];
+            var newData = { title: title.value, price: price.value, type: type.value, remark: remark.value, created: new Date() }
+
+            items.push(newData);
+            localStorage.setItem('transactions', JSON.stringify(items))
+            location.replace("index.html")
+        })
+
+    </script>
+</body>
+
+</html>
