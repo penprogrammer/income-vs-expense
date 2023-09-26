@@ -32,11 +32,11 @@
     <div class="container text-white my-3">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" placeholder="Type your input">
+            <input type="text" class="form-control" id="title" placeholder="Type your input" required>
         </div>
         <div class="mb-3">
             <label for="price" class="form-label">Price</label>
-            <input type="text" class="form-control" id="price" placeholder="Type your input">
+            <input type="number" class="form-control" id="price" placeholder="Type your input" required>
         </div>
         <div class="mb-3">
             <label for="type" class="form-label">Type</label>
@@ -65,15 +65,37 @@
         var addButton = document.getElementById('add-transaction');
 
         addButton.addEventListener("click", function () {
-            var items = JSON.parse(localStorage.getItem("transactions")) ?? [];
-            var newData = { title: title.value, price: price.value, type: type.value, remark: remark.value, created: new Date() }
+            if (title.value != "" && price.value != "") {
+                var items = JSON.parse(localStorage.getItem("transactions")) ?? [];
+                var newData = { title: title.value, price: price.value, type: type.value, remark: remark.value, created: new Date() }
+
+                items.push(newData);
+                localStorage.setItem('transactions', JSON.stringify(items))
+                location.replace("index.html")
+            } else {
+                alert("Please fill up the input fields")
+            }
+
+        })
+
+    </script>
+
+    <!-- <script>
+        var title = document.getElementById('title');
+        var price = document.getElementById('price');
+        var type = document.getElementById('type');
+        var remark = document.getElementById('remark')
+        var addButton =document.getElementById('add-transactions');
+
+        addButton.addEventListener("click", function () {
+            var items = JSON.parse(localStorage.getItem("transaction")) ?? [];
+            var newData = {title: title.value, price: price.value, type: type.value, remark: remark.value, created: new Data() }
 
             items.push(newData);
             localStorage.setItem('transactions', JSON.stringify(items))
             location.replace("index.html")
         })
-
-    </script>
+    </script> -->
 </body>
 
 </html>

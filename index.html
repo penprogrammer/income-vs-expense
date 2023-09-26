@@ -16,7 +16,8 @@
 <body>
 
     <div class="container my-3">
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="setting.html"><i class="fa fa-gear text-white fs-4"></i></a>
             <div class="avatar d-flex justify-content-center align-items-center">
                 <div class="fw-bold text-white fs-6">PP</div>
             </div>
@@ -29,12 +30,32 @@
     </div>
 
     <div class="container my-3">
+        <div class="row mb-3">
+            <div class="col-6">
+                <a href="add_transaction.html" class="text-decoration-none">
+                    <div class="expense p-3 text-white">
+                        <i class="fa-solid fa-circle-arrow-up fs-4 mb-5"></i>
+                        <h3 class="mb-0" id="today_expense">₹0</h3>
+                        <p class="text-sm mb-0">Today's Expense</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6">
+                <a href="add_transaction.html" class="text-decoration-none">
+                    <div class="income p-3 text-white">
+                        <i class="fa-solid fa-circle-arrow-down fs-4 mb-5"></i>
+                        <h3 class="mb-0" id="today_income">₹0</h3>
+                        <p class="text-sm mb-0">Today's Income</p>
+                    </div>
+                </a>
+            </div>
+        </div>
         <div class="row">
             <div class="col-6">
                 <a href="add_transaction.html" class="text-decoration-none">
                     <div class="expense p-3 text-white">
                         <i class="fa-solid fa-circle-arrow-up fs-4 mb-5"></i>
-                        <h3 class="mb-0" id="expense">₹200</h3>
+                        <h3 class="mb-0" id="expense">₹0</h3>
                         <p class="text-sm mb-0">Total Expense</p>
                     </div>
                 </a>
@@ -43,7 +64,7 @@
                 <a href="add_transaction.html" class="text-decoration-none">
                     <div class="income p-3 text-white">
                         <i class="fa-solid fa-circle-arrow-down fs-4 mb-5"></i>
-                        <h3 class="mb-0" id="income">₹200</h3>
+                        <h3 class="mb-0" id="income">₹0</h3>
                         <p class="text-sm mb-0">Total Income</p>
                     </div>
                 </a>
@@ -51,60 +72,172 @@
         </div>
     </div>
 
+    <!-- Doughnut Chart -->
+    <div class="d-flex justify-content-center">
+        <div style="width: 300px;">
+            <canvas id="transactionChart"></canvas>
+        </div>
+    </div>
+
     <div class="container text-white my-3">
         <h6>Recent Transactions</h6>
         <div class="transactions my-3" id="transactions"></div>
+        <button class="btn btn-dark w-100" id="view-all" style="display: none;" onclick="showAllData()">View all
+            transactions</button>
     </div>
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
 
         var income = document.getElementById("income");
         var expense = document.getElementById("expense");
+
+        var today_income = document.getElementById("today_income");
+        var today_expense = document.getElementById("today_expense");
+
         var transactionsParent = document.getElementById("transactions");
         document.getElementById("today-date").innerText = new Date().toLocaleDateString();
+        var chartElem = document.getElementById('transactionChart');
 
         var transactions = JSON.parse(localStorage.getItem("transactions")) ?? [];
         var incomeAmount = 0;
         var expenseAmount = 0;
+
+        var todayIncomeAmount = 0;
+        var todayExpenseAmount = 0;
+
         var transactionElements = '';
+        var recentCount = 0;
 
         if (transactions.length == 0) {
+            chartElem.style.display = "none"
             transactionElements = `
             <div class="border rounded text-center p-3">No transaction found</div>
             `
         }
 
-        transactions.reverse().forEach(function (data) {
-            transactionElements += `
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="icon tr-icon d-flex align-items-center justify-content-center me-3">
-                   ${data.type == 'expense' ? '<i class="fa-solid fa-circle-arrow-up text-danger fs-4"></i>' : '  <i class="fa-solid fa-circle-arrow-down text-success fs-4"></i>'}
-                </div>
-                <div class="details me-auto">
-                    <p class="text-sm fw-bold mb-0">${data.title}</p>
-                    <p class="text-sm mb-0 text-muted">${data.created}</p>
-                </div>
-                <div class="amount">
-                    <h6 class="fw-bold mb-0">${data.type == 'expense' ? '-' : '+'} ₹${data.price}</h6>
-                </div>
-            </div>
-            `
+        if (transactions.length > 5) {
+            document.getElementById("view-all").style.display = "block"
+        }
+
+        transactions.reverse().forEach(function (data, index) {
+            recentCount++
+            if (recentCount <= 5) {
+                transactionElements += `
+                <a href="transaction_info.html?transaction_id=${index}" class="text-decoration-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="icon tr-icon d-flex align-items-center justify-content-center me-3">
+                    ${data.type == 'expense' ? '<i class="fa-solid fa-circle-arrow-up text-danger fs-4"></i>' : '  <i class="fa-solid fa-circle-arrow-down text-success fs-4"></i>'}
+                    </div>
+                    <div class="details me-auto">
+                        <p class="text-sm fw-bold mb-0 text-white">${data.title}</p>
+                        <p class="text-sm mb-0 text-muted">${data.created}</p>
+                    </div>
+                    <div class="amount">
+                        <h6 class="fw-bold mb-0 ${data.type == "expense" ? 'text-danger' : 'text-success'}">${data.type == 'expense' ? '-' : '+'} ₹${data.price}</h6>
+                    </div>
+                    </div>    
+                </a>
+                `
+            }
+
+
+            //Aitu gutei transaction r karone
             if (data.type == 'income') {
                 incomeAmount += Number(data.price)
             } else {
                 expenseAmount += Number(data.price)
             }
+
+            //Aitu ajir transaction r karone
+            if (data.created.split('T')[0] == new Date().toISOString().split('T')[0]) {
+                if (data.type == 'income') {
+                    todayIncomeAmount += Number(data.price)
+                } else {
+                    todayExpenseAmount += Number(data.price)
+                }
+            }
         })
 
         income.innerText = '₹' + incomeAmount;
         expense.innerText = '₹' + expenseAmount;
+        today_income.innerText = '₹' + todayIncomeAmount;
+        today_expense.innerText = '₹' + todayExpenseAmount;
+
+
         transactionsParent.innerHTML = transactionElements;
+
+
+        function showAllData() {
+            transactionElements = ""
+            transactions.forEach(function (data, index) {
+                transactionElements += `
+                <a href="transaction_info.html?transaction_id=${index}" class="text-decoration-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="icon tr-icon d-flex align-items-center justify-content-center me-3">
+                    ${data.type == 'expense' ? '<i class="fa-solid fa-circle-arrow-up text-danger fs-4"></i>' : '  <i class="fa-solid fa-circle-arrow-down text-success fs-4"></i>'}
+                    </div>
+                    <div class="details me-auto">
+                        <p class="text-sm fw-bold mb-0 text-white">${data.title}</p>
+                        <p class="text-sm mb-0 text-muted">${data.created}</p>
+                    </div>
+                    <div class="amount">
+                        <h6 class="fw-bold mb-0 ${data.type == "expense" ? 'text-danger' : 'text-success'}">${data.type == 'expense' ? '-' : '+'} ₹${data.price}</h6>
+                    </div>
+                    </div>    
+                </a>
+                `
+            })
+
+            transactionsParent.innerHTML = transactionElements;
+            document.getElementById("view-all").innerText = "Viewed all transactions"
+            document.getElementById("view-all").className = "btn btn-secondary w-100"
+        }
+
+    </script>
+
+    <script>
+        const currentDate = new Date();
+
+        // Create an array of day names
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+        // Get the day of the week for today
+        const today = daysOfWeek[currentDate.getDay()];
+
+        // Create an array to store the last three days
+        const lastThreeDays = [today];
+
+        // Subtract one day at a time and add the day of the week to the array
+        for (let i = 0; i < 2; i++) {
+            currentDate.setDate(currentDate.getDate() - 1);
+            lastThreeDays.push(daysOfWeek[currentDate.getDay()]);
+        }
+
+        new Chart(chartElem, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'Expense',
+                    'Income'
+                ],
+                datasets: [{
+                    label: 'Amount',
+                    data: [expenseAmount, incomeAmount],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(73, 220, 93)',
+                    ],
+                    hoverOffset: 4
+                }]
+            }
+        });
     </script>
 </body>
 
