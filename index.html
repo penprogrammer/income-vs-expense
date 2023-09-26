@@ -25,7 +25,7 @@
 
     <div class="container text-white my-3">
         <h5>Hello, Pen Programmer</h5>
-        <p class="date" id="today-date">23-09-2023</p>
+        <p class="date" id="today-date"></p>
     </div>
 
     <div class="container my-3">
@@ -67,6 +67,7 @@
         var income = document.getElementById("income");
         var expense = document.getElementById("expense");
         var transactionsParent = document.getElementById("transactions");
+        document.getElementById("today-date").innerText = new Date().toLocaleDateString();
 
         var transactions = JSON.parse(localStorage.getItem("transactions")) ?? [];
         var incomeAmount = 0;
